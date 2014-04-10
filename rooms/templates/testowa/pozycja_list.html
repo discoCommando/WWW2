@@ -1,0 +1,9 @@
+{% extends 'glowna.html' %}
+{% block title %}Lista klasowa</title>{% endblock%}
+{% block content %}
+<ol>
+{% for pozycja in object_list %}
+<li> {{ pozycja.opis }}
+{% endfor %}
+</ol>
+{% endblock %}

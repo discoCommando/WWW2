@@ -16,11 +16,11 @@ def main(request):
     #else:
         #return redirect('glowna')
 
-def logout_(request):
+def logout(request):
     logout(request)
     return redirect('main')
 
-def login_(request):
+def login(request):
     username = request.POST['username']
     password = request.POST['password']
     user = authenticate(username=username, password=password)
