@@ -67,6 +67,43 @@
         </div>
     </div>
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>
+            {% if pagination %}
+                <a href="?page={{pok.number}}&sort=name">Nazwa Pokoju</a>
+            {%else%}
+            Nazawa Pokoju
+            {%endif%}
+            </th>
+            <th>Opis</th>
+            <th>
+            {% if pagination %}
+                <a href="?page={{pok.number}}&sort=capacity">Pojemność</a>
+            {%else%}
+            Pojemność
+            {%endif%}
+            </th>
+            <th>Zarezerwuj</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for pokoj in pok %}
+            <tr>
+            <td>{{ pokoj.id }}</td>
+            <td>{{ pokoj.name }}</td>
+            <td>{{ pokoj.description }}</td>
+            <td>{{pokoj.capacity}}</td>
+            <td><a href="/room/{{pokoj.id}}"> rezerwuj</a></td>
+          </tr> 
+            {% endfor %}
+          
+          
+        </tbody>
+      </table>
 <script src="{% static "jquery.min.js" %}"></script>
         
         <script src="{% static "room/bootstrap/js/bootstrap.min.js" %}"></script>

@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+
 from django.contrib import admin
 admin.autodiscover()
 
@@ -7,4 +8,10 @@ urlpatterns = patterns('',
     # url(r'^$', 'zaliczeniowe.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', 'rooms.views.main', name='main'),
+    url(r'^login$', 'rooms.views.login_', name='login'),
+    url(r'^logout$', 'rooms.views.logout_', name='logout'),
+    
+    url(r'^room_list/', include(rooms.urls)),
+    url(r'^search', 'rooms.views.search', name='search'),
+    url(r'^admin/', include(admin.site.urls)),
 )

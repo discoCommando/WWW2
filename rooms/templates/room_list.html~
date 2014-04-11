@@ -1,0 +1,65 @@
+{% extends 'main.html' %}
+{% block title %}Lista Pokoi</title>{% endblock%}
+{% block content %}
+<table class="table">
+
+	<thead>
+		<tr>
+				<th>
+						{% if not searching %}
+						<a href="?phrase={{phrase}}&page={{rooms.number}}&sort=name">Nazwa Pokoju</a>
+						{% else %}
+					 Nazwa Pokoju 
+						{% endif %}
+				</th>
+				<th>
+						{% if not searching %}
+						<a href="?phrase={{phrase}}&page={{rooms.number}}&sort=capacity">Pojemność</a>
+						{% else %}
+						 Pojemność 
+						{% endif %}
+				</th>
+				<th>Opis</th>
+			<th>Rezerwacja</th>
+		</tr>
+	</thead>
+	<tbody>
+				{% for room in rooms %}
+			<tr>
+			<td>{{ room.name }}</td>
+			<td>{{ room.capacity }}</td>
+			<td>{{ room.about }}</td>
+			<td> <a href="booking{{room.name}}"
+					>Zarezerwuj</td>
+			<br>
+			</tr> 
+			
+			
+			{% endfor %}
+
+        
+  
+	</tbody>
+	<ul class="pagination">
+    {% if rooms.has_previous %}
+      <li><a href="?phrase={{phrase}}&page={{ rooms.previous_page_number }}&sort={{sort}}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><a href="#">&laquo;</a></li>
+    {% endif %}
+
+    {% for num in rooms.paginator.page_range %}
+      {% ifequal num rooms.number %}
+        <li class="active"><a href="#">{{ num }}<span class="sr-only">(current)</span></a></li>
+      {% else %}
+        <li><a href="?phrase={{phrase}}&page={{ num }}&sort={{sort}}">{{ num }}</a></li>
+      {% endifequal %}
+    {% endfor %}
+
+    {% if rooms.has_next %}
+      <li><a href="?phrase={{phrase}}&page={{ rooms.next_page_number }}&sort={{sort}}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><a href="#">&raquo;</a></li>
+    {% endif %}
+  <ul>
+</table>
+{% endblock %}

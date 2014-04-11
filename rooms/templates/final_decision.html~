@@ -1,0 +1,49 @@
+{% extends 'main.html' %}
+{% block title %}Rezerwacja</title>{% endblock%}
+{% block content %}
+
+<table class="table">
+
+	<thead>
+		<tr>
+				<th>
+						Nazwa
+				</th>
+				<th>
+						Od
+				</th>
+				<th>Do</th>
+			<th>Data</th>
+		</tr>
+	</thead>
+	<tbody>
+			
+			<tr>
+			<td>{{ name }}</td>
+			<td>{{ from_hour }}</td>
+			<td>{{ to_hour }}</td>
+			<td>{{ date }}</td>
+			<br>
+			</tr> 
+			
+			
+			
+
+        
+  
+	</tbody>
+	<ul>
+  <ul>
+</table>
+<form action="{% url 'actual_booking' %}" method="GET" role="form" align="center">
+		<input type="hidden" class="form-control" name="name" value="{{name}}">
+		<input type="hidden" class="form-control" name="from_hour" value="{{from_hour}}">
+		<input type="hidden" class="form-control" name="to_hour" value="{{to_hour}}">
+		<input type="hidden" class="form-control" name="date" value="{{date}}">
+	{% if user.is_authenticated %}
+		<button type="submit" class="btn btn-danger">Zarezerwuj</button>
+	{% else %}
+		<h1> Zaloguj się! </h1>
+	{% endif %}
+</form>
+{% endblock %}

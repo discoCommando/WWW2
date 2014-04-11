@@ -2,7 +2,7 @@
 {% block title %}Lista Pokoi</title>{% endblock%}
 {% block content %}
 <ol>
-{% for pos in positions %}
+{% for position in poz %}
 <li> {{ position.about }}
 {% endfor %}
 </ol>
