@@ -52,7 +52,7 @@
 						<li> <a href="{% url 'room_list' %}">Lista Pokoi</a></li>
 					
 						<form action="{% url 'search' %}" method="GET" class="navbar-form navbar-left" role="form">
-							{% csrf_token %} 
+							
 							<div class="form-group">
 								<input type="text" class="form-control" name="phrase" placeholder="Search">
 							</div>

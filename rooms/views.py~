@@ -41,6 +41,7 @@ def search(request):
    
 def booking(request):
    name = request.GET.get('name')
+   
    return render(request, 'booking.html', {"name": name})
 
 def final_decision(request):
@@ -57,29 +58,32 @@ def actual_booking(request):
   from_hour_ = int(request.POST['from_hour'])
   to_hour_ = int(request.POST['to_hour'])
   
-  
-  if from_hour_ >= to_hour_:
-    message = "Godzina Od jest wieksza rowna od godziny Do"
-    return render(request, 'failure.html', {"message": message})  
+  with transaction.atomic():
+    if from_hour_ >= to_hour_:
+      message = "Godzina Od jest wieksza rowna od godziny Do"
+      return render(request, 'failure.html', {"message": message})  
    
-  try:
-    room = FreeDate.objects.all().filter(Q(room = name_) & Q(date = date_) & Q(from_hour__lte = from_hour_) & Q(to_hour__gte = to_hour_))
-  except ValueError, ValidationError:
-    message = "Nie znaleziono wolnego terminu"
-    return render(request, 'failure.html', {"message": message})
+    #try:
+      #room = FreeDate.objects.all().filter(Q(room = name_) & Q(date = date_) & Q(from_hour__lte = from_hour_) & Q(to_hour__gte = to_hour_))
+    #except ValidationError:
+      #message = "Nie znaleziono wolnego terminu"
+      #return render(request, 'failure.html', {"message": message})
    
-  if not room:
-    message = "Nie znaleziono wolnego terminu"
-    return render(request, 'failure.html', {"message": message})
-  else:
-    if room.first().from_hour < from_hour_:
-      FreeDate.objects.create(date = room.first().date, room = room.first().room, from_hour = room.first().from_hour, to_hour = from_hour_)
-    if room.first().to_hour > to_hour_:
-      FreeDate.objects.create(date = room.first().date, room = room.first().room, from_hour = to_hour_, to_hour = room.first().to_hour)
-    Booking.objects.create(date = room.first().date, room = room.first().room, from_hour = from_hour_, to_hour = to_hour_, user = request.user)
-    room.first().delete()
-        
+    #if not room:
+      #message = "Nie znaleziono wolnego terminu"
+      #return render(request, 'failure.html', {"message": message})
+    #else:
+      #roomz = room.first()
+      #room.first().delete()
+      #if roomz.from_hour < from_hour_:
+        #FreeDate.objects.create(date = roomz.date, room = roomz.room, from_hour = roomz.from_hour, to_hour = from_hour_)
+      #if roomz.to_hour > to_hour_:
+        #FreeDate.objects.create(date = roomz.date, room = roomz.room, from_hour = to_hour_, to_hour = roomz.to_hour)
+      #Booking.objects.create(date = roomz.date, room = roomz.room, from_hour = from_hour_, to_hour = to_hour_, user = request.user)
+    
+    Booking.objects.create(date = roomz.date, room = roomz.room, from_hour = from_hour_, to_hour = to_hour_, user = request.user)
     return render(request, 'success.html')
+    
    
 def room_list(request):
     
@@ -106,7 +110,8 @@ def room_list(request):
                         room_list = room_list.filter(Q(name__contains = phrase) | Q(capacity = phrase) | Q(about__contains = phrase))
                 except ValueError:
                         room_list = room_list.all().filter(Q(name__contains = phrase) | Q(about__contains = phrase))
-        
+        else:
+                phrase=""
         
         rooms = room_list
         paginator = Paginator(room_list, 3) # Show 3 rooms per page
