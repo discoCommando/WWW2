@@ -5,7 +5,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.exceptions import FieldError, ValidationError
 from django.db.models import Q
 from django.db import transaction
-from models import Room, FreeDate, Booking
+from models import Room, FreeDate, Booking, Attribute
 
 
 def main(request):
@@ -43,6 +43,11 @@ def booking(request):
    name = request.GET.get('name')
    
    return render(request, 'booking.html', {"name": name})
+
+   
+def advanced_search(request):
+   
+   return render(request, 'advanced_search.html',{"attributes": Attribute.objects.all()})
 
 def final_decision(request):
    name = request.POST['name']
@@ -84,7 +89,32 @@ def actual_booking(request):
     
     Booking.objects.create(date = roomz.date, room = roomz.room, from_hour = from_hour_, to_hour = to_hour_, user = request.user)
     return render(request, 'success.html')
-    
+   
+def room_list_simple(request):
+	from_capacity = from_capacity = request.GET.get('from_capacity')
+	to_capacity = request.GET.get('to_capacity')
+	attr = Attribute.objects.all()
+	phrase = request.GET.get('phrase')
+	room_list = Room.objects.all()
+	
+	if from_capacity:
+		room_list = room_list.filter(Q(capacity__gte = from_capacity))
+	if to_capacity:
+		room_list = room_list.filter(Q(capacity__lte = to_capacity))
+	
+	for a in attr:
+		s = request.GET.get(a.name) 
+		if s == 'on':
+			room_list = room_list.filter(Q(attribute__name = a.name))
+	
+	if phrase:
+		try:
+			room_list = room_list.filter(Q(name__contains = phrase) | Q(capacity = phrase) | Q(about__contains = phrase))
+		except ValueError:
+			room_list = room_list.all().filter(Q(name__contains = phrase) | Q(about__contains = phrase))
+	else:
+		phrase=""
+	return render(request, 'advanced_searched.html',{"rooms": room_list})
    
 def room_list(request):
     
@@ -101,9 +131,8 @@ def room_list(request):
                 room_list = Room.objects.all().order_by(sort)
         else: 
                 room_list = Room.objects.all()
-               
-         
-
+                
+        
 
         phrase = request.GET.get('phrase')
         if phrase:

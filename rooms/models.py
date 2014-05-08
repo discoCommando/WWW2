@@ -1,14 +1,21 @@
 from django.db import models
 from django.db.models import Q	
 
+class Attribute(models.Model):
+        name = models.CharField(max_length=30)
+        def __unicode__(self):
+                return self.name; 
+
 class Room(models.Model):
         name = models.CharField(max_length=30)
         name.primary_key = 'true'
         capacity = models.IntegerField()
         about = models.CharField(max_length=150)
-        
+        attribute = models.ManyToManyField(Attribute)
         def __unicode__(self):
-                return self.name;  
+                return self.name;
+                
+       
 
 class FreeDate(models.Model):
 	date = models.DateField('free date')
@@ -17,7 +24,7 @@ class FreeDate(models.Model):
 	to_hour = models.IntegerField()
 	
 	def __unicode__(self):
-		return self.room.name;
+		return self.room.name + " " + str(self.from_hour) + "-" + str(self.to_hour);
 	
 	def save(self, force_insert=False, force_update=False, using=None):
 		fd_from = FreeDate.objects.all().filter(Q(date = self.date) & Q(room = self.room) & Q(from_hour__lte = self.from_hour) & Q(to_hour__gt = self.from_hour))
@@ -44,8 +51,19 @@ class FreeDate(models.Model):
 				if not fd_from_to_bigger:
 					if not fd_from_to_smaller:
 						can_save2 = True
-						
+		
+		same_date = FreeDate.objects.all().filter(Q(date = self.date))
+		ts_fr = same_date.filter(Q(from_hour = self.to_hour))
+		ts_t = same_date.filter(Q(to_hour = self.from_hour))
+		
 		if can_save & can_save2:
+			if ts_fr:
+				self.to_hour = ts_fr.first().to_hour;
+				ts_fr.first().delete()
+			if ts_t:
+				self.from_hour = ts_t.first().from_hour;
+				ts_t.first().delete()
+			
 			models.Model.save(self, force_insert, force_update, using)
 		else:
 			raise Exception('Nieprawidlowe wartosci')

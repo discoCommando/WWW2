@@ -1,0 +1,33 @@
+{% extends 'main.html' %}
+{% block title %}Wyszukiwanie Zaawansowane</title>{% endblock%}
+{% block content %}
+
+<form action="{% url 'advanced_searched' %}" method="GET" role="form">	
+<div class="btn-group" data-toggle="buttons">	
+{% for attr in attributes %} 
+	
+	<label class="btn btn-primary">
+		<input type="checkbox" name='{{attr.name}}'>{{attr.name}} </label>
+  
+		
+	
+{% endfor %}
+</div>
+<p>
+
+		<div class="form-group">
+			<input type="number" class="form-control" name="from_capacity" placeholder="Ograniczenie dolne pojemności">
+		</div>
+		<div class="form-group">
+			<input type="number" class="form-control" name="to_capacity" placeholder="Ograniczenie górne pojemności">
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control" name="phrase" placeholder="Wpisz Fraze">		
+		</div>
+		<button type="submit" class="btn btn-default">Szukaj</button>
+	</form>
+	
+	
+	{% block result %}
+	{% endblock %}
+{% endblock %}

@@ -16,5 +16,7 @@ urlpatterns = patterns('',
     url(r'^booking', 'rooms.views.booking', name='booking'),
     url(r'^final_decision', 'rooms.views.final_decision', name='final_decision'),
     url(r'^actual_booking', 'rooms.views.actual_booking', name='actual_booking'),
+    url(r'^advanced_search', 'rooms.views.advanced_search', name='advanced_search'),
+    url(r'^result', 'rooms.views.room_list_simple', name='advanced_searched'),
     
 )

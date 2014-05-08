@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rooms',
     'debug_toolbar',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = (

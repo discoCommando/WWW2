@@ -1,0 +1,38 @@
+{% extends 'main.html' %}
+{% block title %}Lista Pokoi</title>{% endblock%}
+{% block content %}
+<table class="table">
+
+	<thead>
+		<tr>
+				<th>
+						Nazwa Pokoju
+				</th>
+				<th> 
+						Pojemność 
+				</th>
+				<th>Opis</th>
+			<th>Rezerwacja</th>
+		</tr>
+	</thead>
+	<tbody>
+				{% for room in rooms %}
+			<tr>
+			<td>{{ room.name }}</td>
+			<td>{{ room.capacity }}</td>
+			<td>{{ room.about }}</td>
+			<td> <a href="booking?name={{room.name}}"
+					>Zarezerwuj</td>
+			<br>
+			</tr> 
+			
+			
+			{% endfor %}
+
+        
+  
+	</tbody>
+	
+</table>
+
+{% endblock %}
