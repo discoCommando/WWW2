@@ -1,0 +1,11 @@
+from django.template import Library
+
+register = Library()
+
+@register.filter
+def minus( value, arg ):
+	return value - arg
+	
+@register.filter
+def times( value ):
+	return range( value )

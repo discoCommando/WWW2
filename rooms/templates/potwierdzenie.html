@@ -1,66 +1,28 @@
-{% extends 'main.html' %}
-{% block title %}Lista Pokoi</title>{% endblock%}
-{% block content %}
-<table class="table">
-
-	<thead>
-		<tr>
-				<th>
-						Nazwa Pokoju
-				</th>
-				<th> 
-						Pojemność 
-				</th>
-				<th>Opis</th>
-			<th>Rezerwacja</th>
-		</tr>
-	</thead>
-	<tbody>
-				{% for room in rooms %}
-			<tr>
-			<td>{{ room.name }}</td>
-			<td>{{ room.capacity }}</td>
-			<td>{{ room.about }}</td>
-			<td> 
-				<button class="btn btn-primary btn-lg" data-toggle="modal" id="przycisk" data-target="#myModal"  
-					onclick="book('{{ room.name }}')" >
-				{% csrf_token %}
-				Zarezerwuj
-				</button>
-			
-			</td>
-			<br>
-			</tr> 
-			
-			
-			{% endfor %}
-
-        
-  
-	</tbody>
-	
-</table>
-
-<div class="modal fade in" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-      </div>
-      <div class="modal-body">
-         <div id="nic">NIC</div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
+<h4> Pokój: {{room_name}} </h4>
+<h4> Data: {{data}} </h4>
+<h4> Godziny: 
+	{% for a in selected %}
+		{{a}}, 
+	{% empty %}
+		nie wybrano godzin
+	{% endfor %}
+</h4>
+<button class="btn btn-default" name='c' onclick='confirm("{{selected}}", "{{data}}")'> 
+										Zaakceptuj
+										</button>
+										
+<form method="POST">
+{% csrf_token %} 
+<div class="btn-group" data-toggle="buttons" id="ccc">
+{% for s in selected %}
+	<input type="hidden" name="name" value="{{s}}">
+{% endfor %}
 </div>
+		<input type="hidden" name="name" value="{{room_name}}">
+</form>						
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    
-    <script>
+
+<script>
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
@@ -106,14 +68,21 @@ $.ajaxSetup({
         }
     }
 });
-function book(room_name) {
-        console.log(csrftoken);
-        $("#myModalLabel").html("Rezerwacja Pokój " + room_name);
-        var jqxhr = $.ajax( "formularz", {type:"GET", 
-            data: {'wartosc': room_name} } )
+
+function confirm(selected, date) {
+    
+    var selected = new Array();
+        
+    $("#ccc input:hidden").each(function(){selected.push($(this).attr('value'))
+				});
+	console.log(selected)
+	console.log(date)
+	console.log("{{room_name}}")
+    var jqxhr = $.ajax( "rezerwacja", {type:"POST", 
+            data: {'data': date, 'room': "{{room_name}}", "selected": selected} } )
         .done(function(data) {
             console.log( "success" );
-             $(".modal-body").html(data);
+            $(".modal-body").html(data);
             })
         .fail(function() {
             console.log( "error" );
@@ -121,6 +90,7 @@ function book(room_name) {
         .always(function() {
             console.log( "complete" );
             });
-        };
-    </script>
-{% endblock %}
+       
+}
+
+</script>

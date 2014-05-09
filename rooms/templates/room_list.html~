@@ -29,7 +29,7 @@
 			<td>{{ room.name }}</td>
 			<td>{{ room.capacity }}</td>
 			<td>{{ room.about }}</td>
-			<td> <a href="booking{{room.name}}"
+			<td> <a href="booking?name={{room.name}}"
 					>Zarezerwuj</td>
 			<br>
 			</tr> 

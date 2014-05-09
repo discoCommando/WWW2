@@ -6,7 +6,7 @@ from django.core.exceptions import FieldError, ValidationError
 from django.db.models import Q
 from django.db import transaction
 from models import Room, FreeDate, Booking, Attribute
-
+from datetime import datetime
 
 def main(request):
     return render(request, 'main.html')
@@ -36,9 +36,43 @@ def search(request):
    return  room_list(request, phrase)
    
    
+def formularz(request):
+	room_ = request.GET['wartosc']
+	free_date = FreeDate.objects.all().filter(Q(room = room_))
+	date_distinct = free_date.values('date').distinct().distinct()
+	free_date = FreeDate.objects.all().filter(Q(room = room_)).order_by('from_hour')
+	hours = {0, 1, 2, 3, 4 ,5 ,6 ,7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23}
+
+	if free_date:
+		return render(request, 'formularz.html', {'free_dates': free_date, 'dates': date_distinct, 'hours': range(24)})
+	else:	
+		return render(request, 'formularz.html')
+	
+		
+
+def potwierdzenie(request):
+	select = request.POST.getlist('selected[]')
+	return render(request, 'potwierdzenie.html', {'selected': select, 'data': request.POST.get('date', False), 'room_name': request.POST.get('room', False)})
    
-   
-   
+@transaction.atomic 
+def rezerwacja(request):
+	name_ = request.POST.get('room')
+	date_ = request.POST.get('data')
+	selected = request.POST.getlist('selected[]')
+	dt = datetime.strptime(date_, "%B %d, %Y")
+	room = Room.objects.all().filter(Q(name = name_))
+	name_ = room.first()
+	with transaction.atomic():
+		
+		if not selected:
+			render(request, 'failure.html')
+		for sel in selected:
+			tmp = int(sel)
+			tmp = tmp + 1
+			
+			Booking.objects.create(date = dt, room = name_, from_hour = sel, to_hour = tmp, user = request.user)
+		return render(request, 'success.html')
+	
 def booking(request):
    name = request.GET.get('name')
    
@@ -105,7 +139,7 @@ def room_list_simple(request):
 	for a in attr:
 		s = request.GET.get(a.name) 
 		if s == 'on':
-			room_list = room_list.filter(Q(attribute.name = a.name))
+			room_list = room_list.filter(Q(attribute__name = a.name))
 	
 	if phrase:
 		try:
